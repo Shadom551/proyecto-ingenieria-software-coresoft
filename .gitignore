@@ -65,3 +65,25 @@ Migrations/
 # Local development files
 local.settings.json
 secrets.json
+
+# Database data dumps
+*.data.sql
+*.dump.sql
+*.sql.gz
+*.backup.sql
+
+# Production database backups
+backup/
+database/backups/
+
+# Database-specific ignores
+*.db
+*.sqlite
+*.sqlite-journal
+*.mdb
+*.sdf
+
+# Environment files with credentials
+.env
+*.env.local
+appsettings.Development.json
