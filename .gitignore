@@ -35,3 +35,33 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+
+# Blazor specific
+bin/
+obj/
+appsettings.Development.json
+appsettings.Local.json
+*.db
+*.db-shm
+*.db-wal
+
+# Entity Framework
+Migrations/
+
+# Visual Studio
+*.userprefs
+*.vspscc
+*.vssscc
+*.sln.iml
+
+# Rider
+*.sln.dotnet
+*.sln.ide
+
+# Compressed files
+*.zip
+*.7z
+
+# Local development files
+local.settings.json
+secrets.json
