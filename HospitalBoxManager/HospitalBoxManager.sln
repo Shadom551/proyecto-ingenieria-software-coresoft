@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HospitalBoxManager", "HospitalBoxManager\HospitalBoxManager.csproj", "{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E8A72B61-B890-40BA-BF32-5C78A22996AA}
+	EndGlobalSection
+EndGlobal
