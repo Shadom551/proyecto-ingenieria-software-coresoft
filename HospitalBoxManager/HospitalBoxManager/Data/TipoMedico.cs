@@ -1,5 +1,4 @@
-﻿using HospitalBoxManager.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,10 +8,7 @@ namespace HospitalBoxManager.Models
 {
     public class TipoMedico
     {
-        public int IdTipoMedico { get; set; }
-        public string Tipo { get; set; } = string.Empty;
-
-        public ICollection<Medico> Medicos { get; set; } = new List<Medico>();
+        public int idTipoMedico;
+        public string Tipo =  string.Empty;
     }
 }
-

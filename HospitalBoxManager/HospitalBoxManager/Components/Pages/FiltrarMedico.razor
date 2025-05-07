@@ -1,0 +1,48 @@
+@inject HospitalBoxManager.Data.HospitalContext Db
+
+
+<select class="form-select" @bind="selectedTipoId">
+    <option value="">-- Seleccione un Tipo --</option>
+    @foreach (var tipo in tiposMedico)
+    {
+        <option value="@tipo.idTipoMedico">@tipo.Tipo</option>
+    }
+</select>
+
+@code {
+    private List<Medico>? medicos;
+    private List<TipoMedico> tiposMedico = new();
+
+    private int? _selectedTipoId;
+    private int? selectedTipoId
+    {
+        get => _selectedTipoId;
+        set
+        {
+            _selectedTipoId = value;
+            _ = CargarMedicos();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        tiposMedico = await Db.TiposMedico.ToListAsync();
+    }
+
+    private async Task CargarMedicos()
+    {
+        if (selectedTipoId is int tipoId)
+        {
+            medicos = await Db.Medicos
+                .Where(m => m.IdTipoMedico == tipoId)
+                .Include(m => m.TipoMedico)
+                .ToListAsync();
+
+            StateHasChanged();
+        }
+        else
+        {
+            medicos = null;
+        }
+    }
+}
