@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HospitalBoxManager.Models;
+using HospitalBoxManager.Data;
 
 namespace HospitalBoxManager.Data
 {

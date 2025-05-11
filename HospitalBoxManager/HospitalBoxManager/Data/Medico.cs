@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Microsoft.Maui.ApplicationModel.Permissions;
 
-namespace HospitalBoxManager.Models
+namespace HospitalBoxManager.Data
 {
     public class Medico
     {
