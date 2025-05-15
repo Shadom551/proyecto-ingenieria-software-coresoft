@@ -1,48 +1,65 @@
-@inject HospitalBoxManager.Data.HospitalContext Db
+﻿@page "/filtrar-medicos"
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@using HospitalBoxManager.Data
+@inject DataLibrary.DataAccess DataAccess
 
+<h3>Filtrar Médicos</h3>
 
-<select class="form-select" @bind="selectedTipoId">
-    <option value="">-- Seleccione un Tipo --</option>
-    @foreach (var tipo in tiposMedico)
-    {
-        <option value="@tipo.idTipoMedico">@tipo.Tipo</option>
-    }
-</select>
+@if (medicos == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!medicos.Any())
+{
+    <p>No se encontraron médicos</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var medico in medicos)
+            {
+                <tr>
+                    <td>@medico.Nombre</td>
+                    <td>@medico.TipoMedico</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
-    private List<Medico>? medicos;
-    private List<TipoMedico> tiposMedico = new();
-
-    private int? _selectedTipoId;
-    private int? selectedTipoId
-    {
-        get => _selectedTipoId;
-        set
-        {
-            _selectedTipoId = value;
-            _ = CargarMedicos();
-        }
-    }
+    private List<Medico> medicos = new();
 
     protected override async Task OnInitializedAsync()
     {
-        tiposMedico = await Db.TiposMedico.ToListAsync();
-    }
+        string sql = @"
+        SELECT m.Nombre, t.idTipoMedico
+        FROM Medico m
+        JOIN TipoMedico t ON t.idTipoMedico = m.idTipoMedico";
 
-    private async Task CargarMedicos()
-    {
-        if (selectedTipoId is int tipoId)
+        try
         {
-            medicos = await Db.Medicos
-                .Where(m => m.IdTipoMedico == tipoId)
-                .Include(m => m.TipoMedico)
-                .ToListAsync();
-
-            StateHasChanged();
+            medicos = await DataAccess.LoadData<Medico, TipoMedico, Medico, dynamic>(
+                sql,
+                (medico, tipoMedico) =>
+                {
+                    medico.TipoMedico = tipoMedico;
+                    return medico;
+                },
+                new { },
+                splitOn: "IdTipoMedico"
+            );
         }
-        else
+        catch (Exception ex)
         {
-            medicos = null;
+            Console.WriteLine($"Error: {ex.Message}");
         }
     }
 }

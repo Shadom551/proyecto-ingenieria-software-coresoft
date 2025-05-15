@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HospitalBoxManager", "HospitalBoxManager\HospitalBoxManager.csproj", "{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLibrary", "DataLibrary\DataLibrary.csproj", "{630C6AE3-63F7-4281-AD1F-3480973AC401}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +19,10 @@ Global
 		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8597A46E-DFF4-4E8E-B9A3-41D70341C6DE}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{630C6AE3-63F7-4281-AD1F-3480973AC401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{630C6AE3-63F7-4281-AD1F-3480973AC401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{630C6AE3-63F7-4281-AD1F-3480973AC401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{630C6AE3-63F7-4281-AD1F-3480973AC401}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

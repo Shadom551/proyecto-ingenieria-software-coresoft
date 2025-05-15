@@ -1,0 +1,142 @@
+﻿@page "/seleccion-horario/{day}-{month}-{year}"
+@inject NavigationManager Navigation
+
+<div class="page-container">
+    <div class="content-area">
+        <div class="time-selection-box">
+            <h1 class="title">SELECCIONE EL HORARIO DESEADO</h1>
+            <div class="date-display">@Day de @Month @Year</div>
+
+            <div class="time-grid">
+                <div class="time-column">
+                    @foreach (var timeSlot in MorningTimeSlots)
+                    {
+                        <button class="time-slot" @onclick="() => SelectTime(timeSlot)">
+                            @timeSlot
+                        </button>
+                    }
+                </div>
+
+                <div class="time-column">
+                    @foreach (var timeSlot in AfternoonTimeSlots)
+                    {
+                        <button class="time-slot" @onclick="() => SelectTime(timeSlot)">
+                            @timeSlot
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Day { get; set; } = "4";
+
+    [Parameter]
+    public string Month { get; set; } = "mayo";
+
+    [Parameter]
+    public string Year { get; set; } = "2025";
+
+    private List<string> MorningTimeSlots { get; } = new()
+    {
+        "8:00-8:30",
+        "8:30-9:00",
+        "9:00-9:30",
+        "9:30-10:00",
+        "10:00-10:30",
+        "10:30-11:00",
+        "11:00-11:30",
+        "11:30-12:00",
+        "12:00-12:30"
+    };
+
+    private List<string> AfternoonTimeSlots { get; } = new()
+    {
+        "12:30-13:00",
+        "13:00-13:30",
+        "13:30-14:00",
+        "14:00-14:30",
+        "14:30-15:00",
+        "15:00-15:30",
+        "15:30-16:00",
+        "16:00-16:30",
+        "16:30-17:00"
+    };
+
+    private void SelectTime(string timeSlot)
+    {
+        Navigation.NavigateTo($"/seleccion-box/{Day}-{Month}-{Year}/{timeSlot}");
+    }
+}
+
+<style>
+    .time-selection-box {
+        width: 90%;
+        max-width: 800px;
+        padding: 30px;
+        background-color: #e6e3dc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .title {
+        color: #333;
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .date-display {
+        font-size: 1.2rem;
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .time-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .time-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .time-slot {
+        padding: 12px;
+        background-color: #d1c8c1;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+        .time-slot:hover {
+            background-color: #3a5a8a;
+            color: white;
+        }
+
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #f5f4f2;
+    }
+
+    .content-area {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+</style>

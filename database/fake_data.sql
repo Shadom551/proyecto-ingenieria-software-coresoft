@@ -3,10 +3,10 @@ use hospitalBoxmanagement;
 SET SQL_SAFE_UPDATES = 0;
 SET FOREIGN_KEY_CHECKS=0;
 
-DELETE FROM Box;
-DELETE FROM Medico;
-DELETE FROM TipoBox;
-DELETE FROM TipoMedico;
+TRUNCATE TABLE Box;
+TRUNCATE TABLE Medico;
+TRUNCATE TABLE TipoBox;
+TRUNCATE TABLE TipoMedico;
 
 INSERT INTO TipoMedico (tipoMedico) VALUES 
 ('Cardiología'),
@@ -24,7 +24,7 @@ INSERT INTO TipoBox (tipoBox) VALUES
 ('Box Emergencias, Monitor cardiaco, desfibrilador, carro de emergencia');
 
 INSERT INTO Medico (nombre, rut, fechaNacimiento, codigoDeProfesional, idTipoMedico) VALUES
-('Dr. Juan Pérez', 123456789, '1980-05-15', 12345, 1),
+('Dr. Juan JuanJUAn', 123456789, '1980-05-15', 12345, 1),
 ('Dra. María González', 98765432, '1975-11-22', 54321, 2),
 ('Dr. Carlos López', 45678901, '1985-03-10', 67890, 3),
 ('Dra. Ana Silva', 23456789, '1990-07-30', 23456, 1),

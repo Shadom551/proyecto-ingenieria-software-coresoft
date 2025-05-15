@@ -1,0 +1,198 @@
+﻿@page "/seleccion-box/{day}-{month}-{year}/{timeSlot}"
+@inject NavigationManager Navigation
+
+<div class="page-container">
+    <div class="content-area">
+        <div class="box-selection-box">
+            <h1 class="title">PASILLO PEDIATRÍA 1</h1>
+            <p class="instruction-text">HAGA CLICK PARA VER EL DETALLE DE CADA BOX</p>
+
+            <div class="availability-legend">
+                <div class="legend-item">
+                    <div class="legend-color unavailable"></div>
+                    <span>NO DISPONIBLE</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color available"></div>
+                    <span>DISPONIBLE</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color maintenance"></div>
+                    <span>EN MANTENIMIENTO</span>
+                </div>
+            </div>
+
+            <div class="date-display">@Day de @Month @Year - @TimeSlot</div>
+
+            <div class="box-grid">
+                @for (int row = 0; row < 8; row++)
+                {
+                    <div class="box-row">
+                        @for (int col = 1; col <= 7; col++)
+                        {
+                            var boxNumber = row * 7 + col;
+                            var boxStatus = GetBoxStatus(boxNumber);
+
+                            <div class="box @boxStatus" @onclick="() => SelectBox(boxNumber)">
+                                BOX @boxNumber
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Day { get; set; }
+
+    [Parameter]
+    public string Month { get; set; }
+
+    [Parameter]
+    public string Year { get; set; }
+
+    [Parameter]
+    public string TimeSlot { get; set; }
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private string GetBoxStatus(int boxNumber)
+    {
+        if (boxNumber % 10 == 0) return "maintenance";
+        if (boxNumber % 3 == 0) return "unavailable";
+        return "available";
+    }
+
+    private void SelectBox(int boxNumber)
+    {
+        var status = GetBoxStatus(boxNumber);
+        if (status == "available")
+        {
+            Navigation.NavigateTo($"/confirmar-box/{Day}-{Month}-{Year}/{TimeSlot}/{boxNumber}");
+        }
+    }
+}
+
+<style>
+    .box-selection-box {
+        width: 90%;
+        max-width: 1000px;
+        padding: 30px;
+        background-color: #e6e3dc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .title {
+        color: #333;
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .instruction-text {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .availability-legend {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+
+    .unavailable {
+        background-color: #68c9fe;
+    }
+
+    .available {
+        background-color: #273886;
+    }
+
+    .maintenance {
+        background-color: #737373;
+    }
+
+    .date-display {
+        font-size: 1.2rem;
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .box-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .box-row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+    }
+
+    .box {
+        padding: 15px;
+        text-align: center;
+        background-color: #d1c8c1;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .box:hover {
+            transform: scale(1.05);
+        }
+
+    .available {
+        background-color: #68c9fe;
+        color: white;
+    }
+
+    .unavailable {
+        background-color: #273886;
+        color: white;
+        cursor: not-allowed;
+    }
+
+    .maintenance {
+        background-color: #737373;
+        cursor: not-allowed;
+    }
+
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #f5f4f2;
+    }
+
+    .content-area {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+</style>

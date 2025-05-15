@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace HospitalBoxManager.Data
 {
-    public class TipoMedico
+    public class MedicoConTipo
     {
-        public int IdTipoMedico { get; set; }
-        public string Tipo { get; set; } = string.Empty;
+        public string Nombre { get; set; } = string.Empty;
+        public string TipoMedico { get; set; } = string.Empty;
     }
-
 
 }

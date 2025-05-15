@@ -1,0 +1,169 @@
+﻿@page "/calendario/{SelectedMonth}"
+@inject NavigationManager Navigation
+@using System.Globalization
+
+<div class="page-container">
+    <div class="content-area">
+        <div class="calendar-box">
+            <h1 class="month-display">@SelectedMonth.ToUpper()</h1>
+            <p class="instruction-text">HAGA CLICK EN EL DÍA QUE DESEE VISUALIZAR</p>
+
+            <div class="calendar-grid">
+                <div class="calendar-header">
+                    @foreach (var day in DayNames)
+                    {
+                        <div class="day-header">@day</div>
+                    }
+                </div>
+
+                @foreach (var week in CalendarWeeks)
+                {
+                    <div class="calendar-week">
+                        @foreach (var day in week)
+                        {
+                            <div class="calendar-day @(day.IsCurrentMonth ? "" : "other-month")"
+                                 @onclick="() => SelectDay(day)">
+                                @day.DayNumber
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string SelectedMonth { get; set; } = "Mayo";
+
+    private List<List<CalendarDay>> CalendarWeeks { get; set; } = new();
+    private string[] DayNames = new[] { "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB", "DOM" };
+
+    protected override void OnInitialized()
+    {
+        GenerateCalendar();
+    }
+
+    private void GenerateCalendar()
+    {
+        CalendarWeeks = new List<List<CalendarDay>>();
+        var culture = new CultureInfo("es-ES");
+        var monthNumber = DateTime.ParseExact(SelectedMonth, "MMMM", culture).Month;
+        var year = DateTime.Now.Year;
+        var firstDayOfMonth = new DateTime(year, monthNumber, 1);
+
+        var daysFromPreviousMonth = ((int)firstDayOfMonth.DayOfWeek - 1 + 7) % 7;
+        var currentDay = firstDayOfMonth.AddDays(-daysFromPreviousMonth);
+
+        for (int week = 0; week < 6; week++)
+        {
+            var weekDays = new List<CalendarDay>();
+            for (int day = 0; day < 7; day++)
+            {
+                weekDays.Add(new CalendarDay
+                    {
+                        DayNumber = currentDay.Day,
+                        IsCurrentMonth = currentDay.Month == monthNumber,
+                        FullDate = currentDay
+                    });
+                currentDay = currentDay.AddDays(1);
+            }
+            CalendarWeeks.Add(weekDays);
+
+            if (currentDay.Month > monthNumber && currentDay.Day > 7)
+                break;
+        }
+    }
+
+    private void SelectDay(CalendarDay day)
+    {
+        if (day.IsCurrentMonth)
+        {
+            var culture = new CultureInfo("es-ES");
+            var monthName = culture.DateTimeFormat.GetMonthName(day.FullDate.Month);
+            Navigation.NavigateTo($"/seleccion-horario/{day.DayNumber}-{monthName}-{day.FullDate.Year}");
+        }
+    }
+
+    private class CalendarDay
+    {
+        public int DayNumber { get; set; }
+        public bool IsCurrentMonth { get; set; }
+        public DateTime FullDate { get; set; }
+    }
+}
+
+<style>
+    .calendar-box {
+        width: 90%;
+        max-width: 800px;
+        padding: 30px;
+        background-color: #e6e3dc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .month-display {
+        color: #333;
+        font-size: 1.8rem;
+        text-align: left;
+        margin-bottom: 10px;
+    }
+
+    .calendar-grid {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .day-header {
+        text-align: center;
+        padding: 8px;
+        color: #333;
+    }
+
+    .calendar-week {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .calendar-day {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #d1c8c1;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .calendar-day:hover {
+            background-color: #f5f4f2;
+        }
+
+    .other-month {
+        opacity: 0.5;
+    }
+
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #f5f4f2;
+    }
+
+    .content-area {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+</style>

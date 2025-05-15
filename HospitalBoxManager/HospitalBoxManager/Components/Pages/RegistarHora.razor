@@ -1,0 +1,83 @@
+﻿@page "/registrar-hora"
+@inject RegistroHoraService RegistroService
+@using HospitalBoxManager.Data
+@using Microsoft.AspNetCore.Components.Forms
+@using HospitalBoxManager.Services
+
+<h3>Registrar Hora Médica</h3>
+
+<EditForm Model="nuevoRegistro" OnValidSubmit="GuardarHora">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="medico">Médico:</label>
+        <select id="medico" class="form-control" @bind="nuevoRegistro.IdMedico">
+            <option disabled selected value="">-- Seleccione un médico --</option>
+            @foreach (var medico in medicos)
+            {
+                <option value="@medico.IdMedico">
+                    @medico.Nombre
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="box">Box:</label>
+        <select id="box" class="form-control" @bind="nuevoRegistro.IdBox">
+            <option disabled selected value="">-- Seleccione un box --</option>
+            @foreach (var box in boxes)
+            {
+                <option value="@box.IdBox">@box.IdBox</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="fecha">Fecha y Hora:</label>
+        <InputDate id="fecha" class="form-control" @bind-Value="nuevoRegistro.FechaInicio" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Registrar</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="alert alert-info mt-3">@mensaje</div>
+}
+
+@code {
+    private RegistroDeHora nuevoRegistro = new();
+    private List<Medico> medicos = new();
+    private List<Box> boxes = new();
+    private string? mensaje;
+
+    protected override async Task OnInitializedAsync()
+    {
+        medicos = await RegistroService.GetMedicosAsync();
+        boxes = await RegistroService.GetBoxesAsync();
+        
+        var fechaInicio = DateTime.Today;
+        var fechaFinal = fechaInicio.AddMinutes(30);
+
+        nuevoRegistro.FechaInicio = fechaInicio;
+        nuevoRegistro.FechaFinal = fechaFinal ;
+
+    }
+
+    private async Task GuardarHora()
+    {
+        try
+        {
+            await RegistroService.RegistrarHoraAsync(nuevoRegistro);
+            mensaje = "✅ Hora registrada correctamente.";
+            nuevoRegistro = new RegistroDeHora { FechaInicio = DateTime.Today };
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"❌ Error al registrar hora: {ex.Message}";
+            Console.WriteLine($"❌ EXCEPCIÓN: {ex}");
+        }
+    }
+}

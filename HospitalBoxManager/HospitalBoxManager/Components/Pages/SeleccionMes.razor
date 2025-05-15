@@ -1,0 +1,135 @@
+﻿@page "/seleccion-mes"
+@inject NavigationManager Navigation
+
+<div class="page-container">
+    <div class="title-container">
+        <div class="hospital-title">HOSPITAL PADRE HURTADO</div>
+        <div class="title-underline"></div>
+    </div>
+
+    <div class="content-area">
+        <div class="centered-box">
+            <h2 class="instruction-text">SELECCIONE EL MES QUE<br>DESEA VISUALIZAR</h2>
+
+            <div class="selection-container">
+                <select @bind="SelectedMonth" class="month-select">
+                    <option selected disabled>Mes ▼</option>
+                    <option>Enero</option>
+                    <option>Febrero</option>
+                    <option>Marzo</option>
+                    <option>Abril</option>
+                    <option>Mayo</option>
+                    <option>Junio</option>
+                    <option>Julio</option>
+                    <option>Agosto</option>
+                    <option>Septiembre</option>
+                    <option>Octubre</option>
+                    <option>Noviembre</option>
+                    <option>Diciembre</option>
+                </select>
+
+                <button class="accept-button" @onclick="NavigateToCalendar" disabled="@(string.IsNullOrEmpty(SelectedMonth))">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #f5f4f2;
+        padding: 0;
+    }
+
+    .title-container {
+        padding: 15px 20px 5px 20px;
+        background-color: #f5f4f2;
+    }
+
+    .hospital-title {
+        color: #333;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: left;
+        margin: 0;
+    }
+
+    .title-underline {
+        height: 2px;
+        background-color: #333;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .content-area {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .centered-box {
+        width: 90%;
+        max-width: 400px;
+        padding: 30px;
+        background-color: #e6e3dc;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .instruction-text {
+        color: #333;
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        line-height: 1.4;
+    }
+
+    .selection-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+    }
+
+    .month-select {
+        width: 50%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #999;
+        font-size: 1rem;
+        background-color: #d1c8c1;
+    }
+
+    .accept-button {
+        background-color: #d1c8c1;
+        color: black;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 100px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: fit-content;
+    }
+
+        .accept-button:hover {
+            background-color: #f5f4f2;
+        }
+</style>
+
+@code {
+    private string? SelectedMonth { get; set; }
+
+    private void NavigateToCalendar()
+    {
+        if (!string.IsNullOrEmpty(SelectedMonth))
+        {
+            Navigation.NavigateTo($"/calendario/{SelectedMonth}");
+        }
+    }
+}

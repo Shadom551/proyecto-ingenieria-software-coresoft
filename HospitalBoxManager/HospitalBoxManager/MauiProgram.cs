@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using HospitalBoxManager.Data;
 using Microsoft.Extensions.Logging;
+using DataLibrary;
+using HospitalBoxManager.Services;
+
 
 namespace HospitalBoxManager
 {
@@ -32,7 +35,20 @@ namespace HospitalBoxManager
                     new MySqlServerVersion(new Version(8, 0, 0))
                 ));
 
+            builder.Services.AddSingleton<DataAccess>(provider =>
+            {
+                var config = provider.GetRequiredService<IConfiguration>();
+                string connStr = config.GetConnectionString("HospitalContext");
+                return new DataAccess(connStr);
+            });
+
+            builder.Services.AddSingleton<RegistroHoraService>();
+
+
+
+
 #if DEBUG
+
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
