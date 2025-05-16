@@ -8,6 +8,10 @@
         <button class="btn btn-primary" @onclick="NavigateToAppointment">
             <span class="bi bi-calendar-plus"></span> Agendar Hora
         </button>
+
+        <button class="btn btn-info ms-3" @onclick="NavigateToBoxStatus">
+            <span class="bi bi-clipboard2-pulse"></span> Estado de Boxes
+        </button>
     </div>
 </div>
 
@@ -18,4 +22,27 @@
     {
         Navigation.NavigateTo("seleccion-mes");
     }
+
+    private void NavigateToBoxStatus()
+    {
+        Navigation.NavigateTo("box-status");
+    }
 }
+
+<style>
+    .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-info {
+    background-color: #0dcaf0;
+    color: white;
+    border: none;
+}
+
+.btn-info:hover {
+    background-color: #0da8d8;
+}
+</style>
