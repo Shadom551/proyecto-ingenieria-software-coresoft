@@ -1,9 +1,40 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page" style="background-color: #f5f4f2;">
+    <div class="top-bar">
+        <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+            <span class="arrow">←</span> Volver
+        </button>
+            
+    </div>
+
     <main>
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+<style>
+    .back-button {
+        background-color: transparent;
+        border: 1px solid #d1d1d1;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .back-button:hover {
+            background-color: #f0f0f0;
+            border-color: #a0a0a0;
+        }
+
+    .arrow {
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }
+</style>

@@ -44,12 +44,6 @@
 
                                 <div class="box @boxStatus" @onclick="() => SelectBox(boxNumber)">
                                     BOX @boxNumber
-                                    @if (boxStatus == "unavailable" && GetAssignedDoctor(boxNumber) != null)
-                                    {
-                                        <div class="assigned-doctor">
-                                            @GetAssignedDoctor(boxNumber)?.Nombre
-                                        </div>
-                                    }
                                 </div>
                             }
                         </div>
