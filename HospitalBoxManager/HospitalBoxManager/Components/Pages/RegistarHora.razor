@@ -48,7 +48,7 @@
 }
 
 @code {
-    private RegistroDeHora nuevoRegistro = new();
+    private ConsultaMedica nuevoRegistro = new();
     private List<Medico> medicos = new();
     private List<Box> boxes = new();
     private string? mensaje;
@@ -72,7 +72,7 @@
         {
             await RegistroService.RegistrarHoraAsync(nuevoRegistro);
             mensaje = "✅ Hora registrada correctamente.";
-            nuevoRegistro = new RegistroDeHora { FechaInicio = DateTime.Today };
+            nuevoRegistro = new ConsultaMedica { FechaInicio = DateTime.Today };
         }
         catch (Exception ex)
         {

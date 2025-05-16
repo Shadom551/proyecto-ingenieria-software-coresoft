@@ -17,6 +17,5 @@ namespace HospitalBoxManager.Data
         public int Rut { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public string CodigoDeProfesional { get; set; } = string.Empty;
-        public List<RegistroDeHora> RegistrosDeHora { get; set; } = [];
     }
 }

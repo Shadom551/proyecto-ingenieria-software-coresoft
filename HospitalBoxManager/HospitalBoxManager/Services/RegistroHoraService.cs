@@ -42,7 +42,7 @@ namespace HospitalBoxManager.Services
             return await _dataAccess.LoadData<Box, dynamic>(sql, new { });
         }
 
-        public async Task RegistrarHoraAsync(RegistroDeHora registro)
+        public async Task RegistrarHoraAsync(ConsultaMedica registro)
         {
             await _dataAccess.SaveData("SET FOREIGN_KEY_CHECKS = 0;", new { });
 

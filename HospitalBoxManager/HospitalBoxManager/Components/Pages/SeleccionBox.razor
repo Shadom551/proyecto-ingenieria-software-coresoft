@@ -1,71 +1,208 @@
 ﻿@page "/seleccion-box/{day}-{month}-{year}/{timeSlot}"
+@using HospitalBoxManager.Data
+@inject DataLibrary.DataAccess DataAccess
 @inject NavigationManager Navigation
+@using System.Globalization
 
 <div class="page-container">
     <div class="content-area">
-        <div class="box-selection-box">
-            <h1 class="title">PASILLO PEDIATRÍA 1</h1>
-            <p class="instruction-text">HAGA CLICK PARA VER EL DETALLE DE CADA BOX</p>
+        @if (isLoading)
+        {
+            <div class="loading-indicator">Cargando disponibilidad...</div>
+        }
+        else
+        {
+            <div class="box-selection-box">
+                <h1 class="title">PASILLO PEDIATRÍA 1</h1>
+                <p class="instruction-text">HAGA CLICK PARA VER EL DETALLE DE CADA BOX</p>
 
-            <div class="availability-legend">
-                <div class="legend-item">
-                    <div class="legend-color unavailable"></div>
-                    <span>NO DISPONIBLE</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color available"></div>
-                    <span>DISPONIBLE</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-color maintenance"></div>
-                    <span>EN MANTENIMIENTO</span>
-                </div>
-            </div>
-
-            <div class="date-display">@Day de @Month @Year - @TimeSlot</div>
-
-            <div class="box-grid">
-                @for (int row = 0; row < 8; row++)
-                {
-                    <div class="box-row">
-                        @for (int col = 1; col <= 7; col++)
-                        {
-                            var boxNumber = row * 7 + col;
-                            var boxStatus = GetBoxStatus(boxNumber);
-
-                            <div class="box @boxStatus" @onclick="() => SelectBox(boxNumber)">
-                                BOX @boxNumber
-                            </div>
-                        }
+                <div class="availability-legend">
+                    <div class="legend-item">
+                        <div class="legend-color unavailable"></div>
+                        <span>NO DISPONIBLE</span>
                     </div>
-                }
+                    <div class="legend-item">
+                        <div class="legend-color available"></div>
+                        <span>DISPONIBLE</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color maintenance"></div>
+                        <span>EN MANTENIMIENTO</span>
+                    </div>
+                </div>
+
+                <div class="date-display">@Day de @Month @Year - @TimeSlot</div>
+
+                <div class="box-grid">
+                    @for (int row = 0; row < 8; row++)
+                    {
+                        <div class="box-row">
+                            @for (int col = 1; col <= 7; col++)
+                            {
+                                var boxNumber = row * 7 + col;
+                                var boxStatus = GetBoxStatus(boxNumber);
+
+                                <div class="box @boxStatus" @onclick="() => SelectBox(boxNumber)">
+                                    BOX @boxNumber
+                                    @if (boxStatus == "unavailable" && GetAssignedDoctor(boxNumber) != null)
+                                    {
+                                        <div class="assigned-doctor">
+                                            @GetAssignedDoctor(boxNumber)?.Nombre
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
+        }
     </div>
 </div>
 
 @code {
-    [Parameter]
-    public string Day { get; set; }
+    [Parameter] public string Day { get; set; }
+    [Parameter] public string Month { get; set; }
+    [Parameter] public string Year { get; set; }
+    [Parameter] public string TimeSlot { get; set; }
 
-    [Parameter]
-    public string Month { get; set; }
+    private bool isLoading = true;
+    private List<int> availableBoxes = new();
+    private List<int> maintenanceBoxes = new();
+    private List<ConsultaMedica> occupiedConsultas = new();
+    private List<Medico> doctors = new();
+    private DateTime selectedDate;
+    private TimeSpan timeSlotStart;
+    private TimeSpan timeSlotEnd;
 
-    [Parameter]
-    public string Year { get; set; }
-
-    [Parameter]
-    public string TimeSlot { get; set; }
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            Console.WriteLine($"📅 Parsing fecha: {Day}-{Month}-{Year}, slot: {TimeSlot}");
+
+            var culture = new CultureInfo("es-ES");
+            var monthNumber = DateTime.ParseExact(Month, "MMMM", culture).Month;
+            selectedDate = new DateTime(int.Parse(Year), monthNumber, int.Parse(Day));
+
+            var timeParts = TimeSlot.Split('-');
+            timeSlotStart = TimeSpan.Parse(timeParts[0]);
+            timeSlotEnd = TimeSpan.Parse(timeParts[1]);
+
+            Console.WriteLine($"📌 Fecha completa: {selectedDate}, de {timeSlotStart} a {timeSlotEnd}");
+
+            var loadTasks = new[]
+            {
+                LoadAvailableBoxes(),
+                LoadMaintenanceBoxes(),
+                LoadOccupiedConsultas(),
+                LoadDoctors()
+            };
+
+            await Task.WhenAll(loadTasks);
+            Console.WriteLine("✅ Todos los datos cargados correctamente.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error general en OnInitializedAsync: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadAvailableBoxes()
+    {
+        try
+        {
+            string sql = @"
+                SELECT b.idBox
+                FROM Box b
+                LEFT JOIN ConsultaMedica c ON b.idBox = c.idBox
+                    AND (
+                        c.FechaInicio < @EndTime
+                        AND c.FechaFinal > @StartTime
+                    )
+                WHERE b.estado = 'Disponible'
+                    AND c.idBox IS NULL";
+
+            var start = selectedDate.Add(timeSlotStart);
+            var end = selectedDate.Add(timeSlotEnd);
+
+            Console.WriteLine($"🟦 LoadAvailableBoxes: Start = {start}, End = {end}");
+
+            availableBoxes = await DataAccess.LoadData<int, dynamic>(
+                sql,
+                new { StartTime = start, EndTime = end });
+
+            Console.WriteLine($"✔ Boxes disponibles: {availableBoxes.Count}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error en LoadAvailableBoxes: {ex.Message}");
+        }
+    }
+
+    private async Task LoadMaintenanceBoxes()
+    {
+        string sql = @"SELECT idBox FROM Box WHERE estado = 'Mantenimiento'";
+        maintenanceBoxes = await DataAccess.LoadData<int, dynamic>(sql, new { });
+    }
+
+    private async Task LoadOccupiedConsultas()
+    {
+        try
+        {
+            string sql = @"
+                SELECT c.*, m.*
+                FROM ConsultaMedica c
+                JOIN Medico m ON c.IdMedico = m.IdMedico
+                WHERE c.FechaInicio < @EndTime
+                  AND c.FechaFinal > @StartTime";
+
+            var start = selectedDate.Add(timeSlotStart);
+            var end = selectedDate.Add(timeSlotEnd);
+
+            Console.WriteLine($"🟧 LoadOccupiedConsultas: {start} - {end}");
+
+            var results = await DataAccess.LoadData<ConsultaMedica, Medico, ConsultaMedica, dynamic>(
+                sql,
+                (consulta, medico) =>
+                {
+                    consulta.Medico = medico;
+                    return consulta;
+                },
+                new { StartTime = start, EndTime = end },
+                splitOn: "IdMedico"
+            );
+
+            occupiedConsultas = results.ToList();
+            Console.WriteLine($"✔ Consultas ocupadas: {occupiedConsultas.Count}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error en LoadOccupiedConsultas: {ex.Message}");
+        }
+    }
+
+    private async Task LoadDoctors()
+    {
+        string sql = "SELECT * FROM Medico";
+        doctors = await DataAccess.LoadData<Medico, dynamic>(sql, new { });
     }
 
     private string GetBoxStatus(int boxNumber)
     {
-        if (boxNumber % 10 == 0) return "maintenance";
-        if (boxNumber % 3 == 0) return "unavailable";
-        return "available";
+        if (maintenanceBoxes.Contains(boxNumber)) return "maintenance";
+        if (occupiedConsultas.Any(c => c.IdBox == boxNumber)) return "unavailable";
+        if (availableBoxes.Contains(boxNumber)) return "available";
+        return "unavailable";
+    }
+
+    private Medico? GetAssignedDoctor(int boxNumber)
+    {
+        return occupiedConsultas.FirstOrDefault(c => c.IdBox == boxNumber)?.Medico;
     }
 
     private void SelectBox(int boxNumber)
@@ -78,7 +215,17 @@
     }
 }
 
+
 <style>
+    .loading-indicator {
+        padding: 2rem;
+        background-color: #e6e3dc;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 1.2rem;
+    }
+
+    /* Rest of your existing styles remain the same */
     .box-selection-box {
         width: 90%;
         max-width: 1000px;

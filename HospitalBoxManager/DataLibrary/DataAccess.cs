@@ -11,8 +11,6 @@ namespace DataLibrary
     public class DataAccess(string connectionString)
     {
         private readonly string _connectionString = connectionString;
-
-        // Existing methods
         public async Task<List<T>> LoadData<T, U>(string sql, U parameters)
         {
             using IDbConnection connection = new MySqlConnection(_connectionString);
@@ -25,8 +23,6 @@ namespace DataLibrary
             using IDbConnection connection = new MySqlConnection(_connectionString);
             await connection.ExecuteAsync(sql, parameters);
         }
-
-        // New multi-mapping method
         public async Task<List<TReturn>> LoadData<T1, T2, TReturn, U>(
             string sql,
             Func<T1, T2, TReturn> map,
@@ -37,8 +33,6 @@ namespace DataLibrary
             var result = await connection.QueryAsync(sql, map, parameters, splitOn: splitOn);
             return [.. result];
         }
-
-        // Optional: 3-way join version
         public async Task<List<TReturn>> LoadData<T1, T2, T3, TReturn, U>(
             string sql,
             Func<T1, T2, T3, TReturn> map,

@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace HospitalBoxManager.Data
 {
-    public class RegistroDeHora
+    public class ConsultaMedica
     {
+        public int IdConsulta { get; set; }
         public int IdMedico { get; set; }
         public int IdBox { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFinal { get; set; }
-
-        public Medico Medico { get; set; } = new Medico();
-        public Box Box { get; set; } = new Box();
+        public Medico? Medico { get; set; }
+        public Box? Box { get; set; }
     }
 
 

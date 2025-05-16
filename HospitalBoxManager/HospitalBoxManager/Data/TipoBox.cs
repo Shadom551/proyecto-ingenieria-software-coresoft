@@ -11,8 +11,6 @@ namespace HospitalBoxManager.Data
     {
         public int IdTipoBox { get; set; }
         public string Tipo { get; set; } = string.Empty;
-
-        public ICollection<Box> Boxes { get; set; } = new List<Box>();
     }
 }
 

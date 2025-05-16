@@ -1,0 +1,117 @@
+﻿@page "/confirmar-box/{Day}-{Month}-{Year}/{TimeSlot}/{BoxNumber:int}"
+@using HospitalBoxManager.Data
+@inject DataLibrary.DataAccess DataAccess
+@inject NavigationManager Navigation
+@using System.Globalization
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+<h3>Confirmar Hora Médica</h3>
+
+@if (isLoading)
+{
+        <p>Cargando datos...</p>
+}
+else
+{
+        <EditForm Model="nuevaConsulta" OnValidSubmit="GuardarConsulta">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label>Fecha:</label>
+                <span class="form-control">@Fecha.ToString("dddd, dd MMMM yyyy", new CultureInfo("es-ES"))</span>
+            </div>
+
+            <div class="mb-3">
+                <label>Hora:</label>
+                <span class="form-control">@TimeSlot</span>
+            </div>
+
+            <div class="mb-3">
+                <label>Box seleccionado:</label>
+                <span class="form-control">BOX @BoxNumber</span>
+            </div>
+
+            <div class="mb-3">
+                <label for="medico">Médico:</label>
+                <select id="medico" class="form-control" @bind="nuevaConsulta.IdMedico">
+                    <option disabled selected value="">-- Seleccione un médico --</option>
+                @foreach (var m in medicos)
+                {
+                            <option value="@m.IdMedico">@m.Nombre</option>
+                }
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Confirmar Hora</button>
+        </EditForm>
+
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+                <div class="alert alert-info mt-3">@mensaje</div>
+    }
+}
+
+@code {
+    [Parameter] public string Day { get; set; }
+    [Parameter] public string Month { get; set; }
+    [Parameter] public string Year { get; set; }
+    [Parameter] public string TimeSlot { get; set; }
+    [Parameter] public int BoxNumber { get; set; }
+
+    private bool isLoading = true;
+    private string? mensaje;
+    private List<Medico> medicos = new();
+    private DateTime Fecha;
+    private TimeSpan horaInicio;
+    private TimeSpan horaFin;
+
+    private ConsultaMedica nuevaConsulta = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var culture = new CultureInfo("es-ES");
+            var monthNumber = DateTime.ParseExact(Month, "MMMM", culture).Month;
+            Fecha = new DateTime(int.Parse(Year), monthNumber, int.Parse(Day));
+
+            var partes = TimeSlot.Split("-");
+            horaInicio = TimeSpan.Parse(partes[0]);
+            horaFin = TimeSpan.Parse(partes[1]);
+
+            medicos = await DataAccess.LoadData<Medico, dynamic>("SELECT * FROM Medico", new { });
+
+            nuevaConsulta.IdBox = BoxNumber;
+            nuevaConsulta.FechaInicio = Fecha.Add(horaInicio);
+            nuevaConsulta.FechaFinal = Fecha.Add(horaFin);
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"❌ Error al cargar: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task GuardarConsulta()
+    {
+        try
+        {
+            string insert = @"
+                INSERT INTO ConsultaMedica (IdMedico, IdBox, FechaInicio, FechaFinal)
+                VALUES (@IdMedico, @IdBox, @FechaInicio, @FechaFinal)";
+
+            await DataAccess.SaveData(insert, nuevaConsulta);
+
+            mensaje = "✅ Hora médica registrada con éxito.";
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"❌ Error al guardar: {ex.Message}";
+        }
+    }
+}
